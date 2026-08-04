@@ -136,7 +136,7 @@ function renderRow(container, key, value) {
     icon.alt = "Link to publisher website";
     icon.style.width = "16px";
     icon.style.height = "16px";
-    icon.style.color = "#9CA3AF";
+    icon.style.marginBottom = "-2px";
     link.appendChild(icon);
     div.appendChild(link);
     addText(")")
