@@ -582,7 +582,9 @@ function validateIsbn13(isbn) {
  */
 export function getPublisherSearchLink(publisher) {
   const publisherNames = [
-    { names: ["Penguin Books"], link: "https://www.penguinrandomhouse.com/search/{query}?q={query}", acceptedQuerys: ["ISBN-13", "ISBN-10", "Title"]} 
+    { names: ["Penguin", "Penguin Books", "Penguin Audio"], link: "https://www.penguinrandomhouse.com/search/{query}?q={query}", acceptedQuerys: ["ISBN-13", "ISBN-10", "Title"]},
+    { names: ["Macmillan", "Macmillan Audio", "Henry Holt", "Henry Holt and Co."], link: "https://us.macmillan.com/?q={query}", acceptedQuerys: ["ISBN-13", "ISBN-10", "Title"]},
+    { names: ["Little, Brown Books for Young Readers"], link: "https://www.hachettebookgroup.com/?s={query}", acceptedQuerys: ["ISBN-13", "ISBN-10", "Title"]}
   ]
 
   for (const publisherName of publisherNames) {
