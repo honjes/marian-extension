@@ -1,6 +1,6 @@
 import { tryGetDetails } from "./messaging.js";
 import { isAllowedUrl, normalizeUrl } from "../extractors";
-import { setLastFetchedUrl, getLastFetchedUrl, getCurrentTab, SetupSettings, getLocalDateFormat, orderedKeys, normalizeDetails, notifyBackground } from "./utils.js";
+import { setLastFetchedUrl, getLastFetchedUrl, getCurrentTab, SetupSettings, getLocalDateFormat, orderedKeys, normalizeDetails, notifyBackground, getPublisherSearchLink } from "./utils.js";
 
 const settingsManager = SetupSettings(document.querySelector("#settings"), {
   hyphenateIsbn: {
@@ -87,6 +87,7 @@ function renderRow(container, key, value) {
   // Data
   const isContributors = key === 'Contributors' && Array.isArray(value) && value[0]?.roles;
   const isMappings = key === "Mappings" && value && typeof value === 'object';
+  const hasPublisherLink = key === "Publisher" && typeof value === 'object';
 
   if (isContributors) {
     value.forEach((contributor, i) => {
@@ -122,6 +123,23 @@ function renderRow(container, key, value) {
       addText(")");
       if (i !== flatList.length - 1) addText(', ');
     });
+  } else if (hasPublisherLink) {
+    addSpan(value.name, 'value')
+    addText(" (");
+    const link = document.createElement('a');
+    link.href = value.link;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.className = "value publisher-link";
+    const icon = document.createElement('img');
+    icon.src = "icons/extra icons/up-right-from-square.svg";
+    icon.alt = "Link to publisher website";
+    icon.style.width = "16px";
+    icon.style.height = "16px";
+    icon.style.color = "#9CA3AF";
+    link.appendChild(icon);
+    div.appendChild(link);
+    addText(")")
   } else if (Array.isArray(value)) {
     // Check for Standard Arrays
     value.forEach((item, i) => {
@@ -296,6 +314,26 @@ function renderDetailsWithSettings(details, settings = {}) {
     if (details.Series) renderRow(metaTop, 'Series', details.Series);
     if (details['Series Place']) renderRow(metaTop, 'Series Place', details['Series Place']);
     container.appendChild(metaTop);
+  }
+
+  // Check if Publisher has link
+  if (details.Publisher) {
+    const publisherSearchLink = getPublisherSearchLink(details.Publisher);
+    console.log("publisherSearchLink: ", publisherSearchLink)
+
+    if (publisherSearchLink) {
+      // replace query with search term
+      for (const query of publisherSearchLink.acceptedQuerys) {
+        if (!details[query]) continue;
+        console.log("replace: ", publisherSearchLink.link.replaceAll("{query}", details[query]))
+        let newObject = {
+          link: publisherSearchLink.link.replaceAll("{query}", details[query]),
+          name: details.Publisher
+        }
+        details.Publisher = newObject;
+        break;
+      }
+    }
   }
 
   const hr = document.createElement('hr');
