@@ -574,3 +574,20 @@ function validateIsbn13(isbn) {
   const checksum = getISBN13CheckDigit(isbn);
   return checksum === isbn[isbn.length - 1];
 }
+
+/**
+ * Takes in a publisher name and returns a link to search for the book on the publisher's website
+ * @param {string} publisher The name of the publisher
+ * @returns Object with link and accepted queries or false if no match
+ */
+export function getPublisherSearchLink(publisher) {
+  const publisherNames = [
+    { names: ["Penguin Books"], link: "https://www.penguinrandomhouse.com/search/{query}?q={query}", acceptedQuerys: ["ISBN-13", "ISBN-10", "Title"]} 
+  ]
+
+  for (const publisherName of publisherNames) {
+    console.log(publisherName, publisher)
+    if (publisherName.names.includes(publisher)) return {link: publisherName.link, acceptedQuerys: publisherName.acceptedQuerys};
+  }
+  return false
+}
